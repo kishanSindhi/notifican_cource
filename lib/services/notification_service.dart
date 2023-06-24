@@ -5,7 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notifican_cource/main.dart';
+import 'package:notifican_cource/view/home.dart';
 import 'package:notifican_cource/view/temp_screen.dart';
+import 'package:notifican_cource/utils/key_consts.dart';
 
 class NotificationService extends ChangeNotifier {
   /// This will make only one instance of this class :) and ALSO known as singleton class.
@@ -28,7 +30,7 @@ class NotificationService extends ChangeNotifier {
       null,
       [
         NotificationChannel(
-          channelKey: 'key',
+          channelKey: KeyConstants.key,
           channelName: 'Channel 1',
           channelDescription: 'For basic test',
           importance: NotificationImportance.Max,
@@ -39,16 +41,29 @@ class NotificationService extends ChangeNotifier {
           defaultColor: Colors.red,
           channelShowBadge: true,
           playSound: true,
-          icon:
-              'resource://drawable/res_leaf', // here resource:// says that it is in res folder and add res_ infront of name so that icon do not get shrink.
-          soundSource: 'resource://raw/cat', // only m4a file allowed
+          icon: KeyConstants
+              .iconPath, // here resource:// says that it is in res folder and add res_ infront of name so that icon do not get shrink.
+          soundSource:
+              KeyConstants.notificationSoundPath, // only m4a file allowed
+        ),
+        NotificationChannel(
+          channelKey: KeyConstants.chatChannelKey,
+          channelGroupKey: KeyConstants.chatGroupKey,
+          channelName: KeyConstants.chatChannelName,
+          channelDescription: 'Your chat notification will be displayed here',
+          channelShowBadge: true,
+          importance: NotificationImportance.Max,
+          icon: KeyConstants
+              .iconPath, // here resource:// says that it is in res folder and add res_ infront of name so that icon do not get shrink.
+          soundSource:
+              KeyConstants.notificationSoundPath, // only m4a file allowed
         ),
       ],
       debug: kDebugMode,
     );
   }
 
-  void requiestNotiPermission() async {
+  void requestNotiPermission() async {
     _noti.isNotificationAllowed().then((value) {
       if (!value) {
         _noti.requestPermissionToSendNotifications();
@@ -78,6 +93,8 @@ class NotificationService extends ChangeNotifier {
   Future<void> _onActionReceivedMethod(ReceivedAction receivedAction) async {
     debugPrint(receivedAction.toString());
     navigatorHelper(receivedAction); //  this will navigate to temp screen
+    debugPrint('recived action -> ${receivedAction.buttonKeyInput}');
+    sendReplyNotification(receivedAction);
   }
 
   Future<void> _onDismissActionReceivedMethod(
@@ -97,11 +114,28 @@ class NotificationService extends ChangeNotifier {
 }
 
 void navigatorHelper(ReceivedAction action) {
-  if (action.payload != null && action.payload!['screen_name'] != null) {
+  if (action.payload != null &&
+      action.payload![KeyConstants.screenName] != null) {
     MyApp.navigatorKey.currentState!.push(
       CupertinoPageRoute(
         builder: (context) => TempScreen(),
       ),
     );
+  }
+}
+
+void sendReplyNotification(ReceivedAction receivedAction) {
+  if (receivedAction.channelKey == KeyConstants.chatChannelKey) {
+    if (receivedAction.buttonKeyPressed == KeyConstants.reply) {
+      localNoti.createChatNotification(
+        channelKey: receivedAction.channelKey!,
+        chatName: receivedAction.summary!,
+        groupKey: receivedAction.groupKey!,
+        image:
+            'https://pbs.twimg.com/profile_images/1485050791488483328/UNJ05AV8_400x400.jpg',
+        message: receivedAction.buttonKeyInput,
+        userName: 'You',
+      );
+    }
   }
 }
