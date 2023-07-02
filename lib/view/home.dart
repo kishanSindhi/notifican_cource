@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:notifican_cource/services/remote_notification.dart';
 
 import '../services/local_notification.dart';
 import '../services/notification_service.dart';
@@ -19,6 +20,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final noti = NotificationService();
+  final remoteNoti = RemoteNotification();
 
   @override
   void initState() {
@@ -92,6 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('Chat noti'),
+              ),
+              ElevatedButton(
+                onPressed: () => remoteNoti.subScribeToTopic('anime'),
+                child: const Text('sub to anime'),
+              ),
+              ElevatedButton(
+                onPressed: () => remoteNoti.unSubscribeToTopic('anime'),
+                child: const Text('Un sub to anime'),
               ),
             ],
           ),

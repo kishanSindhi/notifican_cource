@@ -1,10 +1,14 @@
 import 'dart:math';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:awesome_notifications_fcm/awesome_notifications_fcm.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:notifican_cource/firebase_options.dart';
 import 'package:notifican_cource/main.dart';
+import 'package:notifican_cource/services/remote_notification.dart';
 import 'package:notifican_cource/view/home.dart';
 import 'package:notifican_cource/view/temp_screen.dart';
 import 'package:notifican_cource/utils/key_consts.dart';
@@ -20,12 +24,16 @@ class NotificationService extends ChangeNotifier {
   AwesomeNotifications _noti = AwesomeNotifications();
   Random random = Random();
   int scheduledId = 0;
+  RemoteNotification remoteNotification = RemoteNotification();
 
   void onChanged() {
     notifyListeners();
   }
 
-  static Future<void> init() async {
+  Future<void> initLocalNotification() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     await AwesomeNotifications().initialize(
       null,
       [
@@ -62,6 +70,29 @@ class NotificationService extends ChangeNotifier {
       debug: kDebugMode,
     );
   }
+
+  Future<void> initRemoteNotification() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await AwesomeNotificationsFcm().initialize(
+      onFcmTokenHandle: onFcmTokenHandle,
+      onFcmSilentDataHandle: onFcmSilentDataHandle,
+      onNativeTokenHandle: onNativeTokenHandle,
+      debug: true,
+      licenseKeys: [],
+    );
+    await remoteNotification.requestFCMToken();
+  }
+
+  /// this will initialize when we receive silent notification even in BG or app is terminated
+  static Future<void> onFcmSilentDataHandle(FcmSilentData data) async {}
+
+  /// this will detect a new FCM token (when received)
+  static Future<void> onFcmTokenHandle(String fcmToken) async {}
+
+  /// this will capture the native token (when received)
+  static Future<void> onNativeTokenHandle(String nativeToken) async {}
 
   void requestNotiPermission() async {
     _noti.isNotificationAllowed().then((value) {

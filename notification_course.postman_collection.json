@@ -1,0 +1,46 @@
+{
+	"info": {
+		"_postman_id": "df6c9fd7-df08-424a-be0a-fbdf8e478fae",
+		"name": "notification_course",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22893973"
+	},
+	"item": [
+		{
+			"name": "Send notification",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "key=AAAAWRLNB88:APA91bExHI_ZAcXTs5k8YnX7X5WDYlNMzBgOtczqAmQ7a32kCJtVHGV8QDho66YbHLd4-ayOT1-ThW1yiZ-c_f5ToGY-0z924h1id5Xt___ZAIqhKXACi24zeeujhNukZCTHPsUIXVLM",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"to\" : \"enXa3CuBTK-CcoOWMk7n3q:APA91bFCOmBYMIlVSrJnRN_Y_qfb6scH84BdfslDXkBoLAJkjm2mz87LAf_YGa8sUitAOq4-0M2wC2MsRfwa2D03bgMF-qAaHsPCcjXuVJjlkj925IHaTaO8Raf1OXtaVQIkzkhe8voj\",\n    \"priority\": \"high\",\n    \"mutable_content\": true,\n    \"notification\": {\n        \"badge\": 42,\n        \"title\": \"Huston! The eagle has landed!\",\n        \"body\": \"A small step for a man, but a giant leap to Flutter's community!\"\n    },\n    \"data\" : {\n        \"content\": {\n            \"id\": 1,\n            \"badge\": 42,\n            \"channelKey\": \"chat_key\",\n            \"displayOnForeground\": true,\n            \"notificationLayout\": \"BigPicture\",\n            \"largeIcon\": \"https://br.web.img3.acsta.net/pictures/19/06/18/17/09/0834720.jpg\",\n            \"bigPicture\": \"https://www.dw.com/image/49519617_303.jpg\",\n            \"showWhen\": true,\n            \"autoDismissible\": true,\n            \"privacy\": \"Private\",\n            \"payload\": {\n                \"secret\": \"Awesome Notifications Rocks!\"\n            }\n        },\n        \"actionButtons\": [\n            {\n                \"key\": \"REDIRECT\",\n                \"label\": \"Redirect\",\n                \"autoDismissible\": true\n            },\n            {\n                \"key\": \"DISMISS\",\n                \"label\": \"Dismiss\",\n                \"actionType\": \"DismissAction\",\n                \"isDangerousOption\": true,\n                \"autoDismissible\": true\n            }\n        ],\n        \"Android\": {\n            \"content\": {\n                \"title\": \"Android! The eagle has landed!\",\n                \"payload\": {\n                    \"android\": \"android custom content!\"\n                }\n            }\n        },\n        \"iOS\": {\n            \"content\": {\n                \"title\": \"Jobs! The eagle has landed!\",\n                \"payload\": {\n                    \"ios\": \"ios custom content!\"\n                }\n            },\n            \"actionButtons\": [\n                {\n                    \"key\": \"REDIRECT\",\n                    \"label\": \"Redirect message\",\n                    \"autoDismissible\": true\n                },\n                {\n                    \"key\": \"DISMISS\",\n                    \"label\": \"Dismiss message\",\n                    \"actionType\": \"DismissAction\",\n                    \"isDangerousOption\": true,\n                    \"autoDismissible\": true\n                }\n            ]\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "https://fcm.googleapis.com/fcm/send",
+					"protocol": "https",
+					"host": [
+						"fcm",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"fcm",
+						"send"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

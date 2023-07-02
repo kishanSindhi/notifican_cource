@@ -3,8 +3,11 @@ import 'package:notifican_cource/services/notification_service.dart';
 import 'package:notifican_cource/view/home.dart';
 
 void main() async {
+  final noti = NotificationService();
+
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.init();
+  await noti.initLocalNotification();
+  await noti.initRemoteNotification();
   runApp(const MyApp());
 }
 
