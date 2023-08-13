@@ -1,17 +1,25 @@
 import 'dart:math';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:awesome_notifications_fcm/awesome_notifications_fcm.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notifican_cource/firebase_options.dart';
 import 'package:notifican_cource/main.dart';
+import 'package:notifican_cource/services/local_notification.dart';
 import 'package:notifican_cource/services/remote_notification.dart';
 import 'package:notifican_cource/view/home.dart';
 import 'package:notifican_cource/view/temp_screen.dart';
 import 'package:notifican_cource/utils/key_consts.dart';
+
+Future<void> _bgMessageHandler(RemoteMessage message) async {
+  debugPrintStack(
+    label: '${message.toMap()}',
+    stackTrace: StackTrace.current,
+  );
+}
 
 class NotificationService extends ChangeNotifier {
   /// This will make only one instance of this class :) and ALSO known as singleton class.
@@ -24,7 +32,8 @@ class NotificationService extends ChangeNotifier {
   AwesomeNotifications _noti = AwesomeNotifications();
   Random random = Random();
   int scheduledId = 0;
-  RemoteNotification remoteNotification = RemoteNotification();
+  MyRemoteNotification remoteNotification = MyRemoteNotification();
+  LocalNotiService localNoti = LocalNotiService();
 
   void onChanged() {
     notifyListeners();
@@ -71,22 +80,42 @@ class NotificationService extends ChangeNotifier {
     );
   }
 
+  /// As per firebase messaging docs there are 3 stages of <br>
+  /// notification 1. Foreground, 2. Background and 3. terminated <BR>
+  /// for foreground we use ```onMessage``` method and <BR>
+  /// for background and when app is terminated we use ```onBackgroundMessage```
   Future<void> initRemoteNotification() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    await AwesomeNotificationsFcm().initialize(
-      onFcmTokenHandle: onFcmTokenHandle,
-      onFcmSilentDataHandle: onFcmSilentDataHandle,
-      onNativeTokenHandle: onNativeTokenHandle,
-      debug: true,
-      licenseKeys: [],
-    );
+    try {
+      FirebaseMessaging.onBackgroundMessage(_bgMessageHandler);
+    } catch (e) {
+      print(e.toString());
+    }
+
+    FirebaseMessaging.onMessage.listen(_onMessageListner);
+
+    // await AwesomeNotificationsFcm().initialize(
+    //   onFcmTokenHandle: onFcmTokenHandle,
+    //   onFcmSilentDataHandle: onFcmSilentDataHandle,
+    //   onNativeTokenHandle: onNativeTokenHandle,
+    //   debug: true,
+    //   licenseKeys: [],
+    // );
     await remoteNotification.requestFCMToken();
   }
 
+  Future<void> _onMessageListner(RemoteMessage message) async {
+    debugPrintStack(
+      label: '${message.toMap()}',
+      stackTrace: StackTrace.current,
+    );
+    localNoti.sendNoti(
+      title: message.notification?.title ?? '',
+      body: message.notification?.body ?? '',
+    );
+  }
+
   /// this will initialize when we receive silent notification even in BG or app is terminated
-  static Future<void> onFcmSilentDataHandle(FcmSilentData data) async {}
+  // static Future<void> onFcmSilentDataHandle(FcmSilentData data) async {}
 
   /// this will detect a new FCM token (when received)
   static Future<void> onFcmTokenHandle(String fcmToken) async {}

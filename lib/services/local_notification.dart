@@ -11,14 +11,18 @@ class LocalNotiService extends ChangeNotifier {
   final AwesomeNotifications _noti = AwesomeNotifications();
 
   /// This method will send simple notification to the device and no one will notice.
-  void sendNoti() async {
+  void sendNoti({
+    String title = 'This is title',
+    String body = 'this is body',
+    int? id,
+  }) async {
     _noti.createNotification(
       content: NotificationContent(
-        id: random.nextInt(10000),
+        id: id ?? random.nextInt(10000),
         channelKey: KeyConstants
             .key, // The key should be the same as initalization notification
-        title: 'This is title',
-        body: 'this is body',
+        title: title,
+        body: body,
       ),
     );
   }

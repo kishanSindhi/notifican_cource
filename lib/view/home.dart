@@ -20,7 +20,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final noti = NotificationService();
-  final remoteNoti = RemoteNotification();
+  final remoteNoti = MyRemoteNotification();
 
   @override
   void initState() {
